@@ -1,0 +1,54 @@
+import requests
+import streamlit as st
+from PIL import Image
+from io import BytesIO
+
+# === NASA APOD API ===
+API_URL = "https://api.nasa.gov/planetary/apod"
+API_KEY = "DEMO_KEY"  # Replace with your own API key from https://api.nasa.gov/
+
+def fetch_apod(date=None):
+    """Fetch Astronomy Picture of the Day (APOD) data from NASA API"""
+    params = {"api_key": API_KEY}
+    if date:
+        params["date"] = date  # format: YYYY-MM-DD
+    
+    response = requests.get(API_URL, params=params)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        raise Exception(f"API request failed: {response.status_code}")
+
+# --- Streamlit UI ---
+st.title("🌌 NASA Astronomy Picture of the Day")
+
+date = st.text_input("Enter Date (YYYY-MM-DD):", "")
+if st.button("Fetch APOD"):
+    try:
+        data = fetch_apod(date if date else None)
+        title = data.get("title", "No Title")
+        apod_date = data.get("date", "No Date")
+        explanation = data.get("explanation", "No Description")
+        img_url = data.get("url")
+
+        if "youtube" in img_url or img_url.endswith(".mp4"):
+            st.warning("Today's APOD is a video:")
+            st.markdown(f"[Watch here]({img_url})")
+        else:
+            img_response = requests.get(img_url)
+            img = Image.open(BytesIO(img_response.content))
+            st.image(img, caption=f"{title} ({apod_date})", use_column_width=True)
+            st.write(explanation)
+    except Exception as e:
+        st.error(f"Error: {e}")
+
+# Show today’s APOD by default
+if not date:
+    data = fetch_apod()
+    img_url = data.get("url")
+    title = data.get("title", "No Title")
+    explanation = data.get("explanation", "No Description")
+    img_response = requests.get(img_url)
+    img = Image.open(BytesIO(img_response.content))
+    st.image(img, caption=title, use_column_width=True)
+    st.write(explanation)
