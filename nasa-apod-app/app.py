@@ -50,7 +50,8 @@ if not date:
     explanation = data.get("explanation", "No Description")
     img_response = requests.get(img_url)
     img = Image.open(BytesIO(img_response.content))
-    st.image(img, caption=title, use_column_width=True)
+    st.image(img, caption=title, use_container_width=True)
     st.write(explanation)
+
 
 
