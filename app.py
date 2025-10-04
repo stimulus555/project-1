@@ -51,4 +51,5 @@ if not date:
     img_response = requests.get(img_url)
     img = Image.open(BytesIO(img_response.content))
     st.image(img, caption=title, use_column_width=True)
+
     st.write(explanation)
