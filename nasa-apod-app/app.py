@@ -37,7 +37,7 @@ if st.button("Fetch APOD"):
         else:
             img_response = requests.get(img_url)
             img = Image.open(BytesIO(img_response.content))
-            st.image(img, caption=f"{title} ({apod_date})", use_column_width=True)
+            st.image(img, caption=f"{title} ({apod_date})", use_container_width=True)
             st.write(explanation)
     except Exception as e:
         st.error(f"Error: {e}")
@@ -52,4 +52,5 @@ if not date:
     img = Image.open(BytesIO(img_response.content))
     st.image(img, caption=title, use_column_width=True)
     st.write(explanation)
+
 
